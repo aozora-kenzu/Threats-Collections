@@ -11,15 +11,15 @@
  * Generated Artifacts in "dataset/":
  * - dataset/vpn.txt              (Merged X4BNet VPN + Joseph Rocca VPN)
  * - dataset/datacenter.txt       (Merged X4BNet DC + Jhassine + AWS + Cloudflare + DigitalOcean + Oracle Cloud)
- * - dataset/verified_bots.txt    (Official Bots: Googlebot, Bingbot, GPTBot, SearchBot, Applebot: CIDR\tName\tCategory)
+ * - dataset/verified_bots.txt    (Official Bots: Googlebot, Bingbot, GPTBot, SearchBot, Applebot: CIDR, Name, Category)
  * - dataset/tor_exit_nodes.txt   (Merged SecOps Tor + TorProject Bulk Exit List)
- * - dataset/ipsum.txt            (IPsum Threat Feed: IP\tHits)
+ * - dataset/ipsum.txt            (IPsum Threat Feed: IP, Hits)
  * - dataset/firehol_level1.txt   (FireHOL Level 1 Malware Threat CIDR)
  * - dataset/firehol_level2.txt   (FireHOL Level 2 Active Attackers CIDR)
  * - dataset/firehol_proxies.txt  (FireHOL Aggregated Open Proxies CIDR)
  * - dataset/spamhaus_drop.txt    (Spamhaus DROP Hijacked Nets CIDR)
- * - dataset/datacenter_asns.txt  (Merged X4BNet DC + X4BNet VPN + Enesutku + Brian Hama Bad ASN: ASN\tName)
- * - dataset/asn_names.txt        (Global ASN Directory: RIPE NCC + BGP.tools: ASN\tName\tCC)
+ * - dataset/datacenter_asns.txt  (Merged X4BNet DC + X4BNet VPN + Enesutku + Brian Hama Bad ASN: ASN, Name)
+ * - dataset/asn_names.txt        (Global ASN Directory: RIPE NCC + BGP.tools: ASN, Name, Country Code)
  *
  * Execution Options:
  * - php gets.php                   (Collect and build all datasets)
