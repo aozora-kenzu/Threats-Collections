@@ -1,0 +1,41 @@
+name: Auto Update Threat Datasets
+
+on:
+  schedule:
+    # Runs automatically every day at 02:00 UTC (09:00 WIB)
+    - cron: "0 2 * * *"
+  workflow_dispatch: # Allows manual trigger anytime from GitHub Actions tab
+
+permissions:
+  contents: write
+
+jobs:
+  update-datasets:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup PHP environment
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          extensions: curl, mbstring
+          ini-values: memory_limit=1024M, max_execution_time=1800
+
+      - name: Build Threat Datasets
+        run: |
+          php gets.php
+
+      - name: Commit and push updated datasets
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add dataset/
+          if git diff --staged --quiet; then
+            echo "No dataset updates detected. Skipping commit."
+          else
+            git commit -m "chore(auto): update threat datasets [$(date -u +'%Y-%m-%d %H:%M UTC')]"
+            git push
+          fi

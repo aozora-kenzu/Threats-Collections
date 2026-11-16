@@ -1,0 +1,15 @@
+# Temporary downloads directory
+/temp/
+
+# Local SQLite importer and database files (kept on local machine only)
+feeds.php
+/feeds/
+
+# Logs and system files
+*.log
+.DS_Store
+Thumbs.db
+
+# IDE & Editor configs
+.vscode/
+.idea/
