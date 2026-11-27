@@ -1,26 +1,52 @@
 <a id="top"></a>
 
+> [!WARNING]
+>
+> ### 🚨 Repository Moved — Please Migrate Before December 5, 2026
+>
+> This repository has permanently moved to **[`aozora-kenzu/IP-Threats-Collections`](https://github.com/aozora-kenzu/IP-Threats-Collections)**.
+>
+> - **Deprecation / Sunset Date:** **December 5, 2026** _(1-week grace period from November 28, 2026)_.
+> - **What happens after December 5, 2026:** Automated daily dataset updates in this repository will be **discontinued**, and this repository will be **archived** as read-only.
+> - **What's improved in the new repository:** Datasets are now published cleanly via **GitHub Releases** (individual `.txt` feeds, compressed `.zip` / `.tar.gz` bundles, and `SHA256SUMS.txt` verification) instead of daily Git commits — keeping the repository lightweight and fast to pull.
+>
+> #### Quick URL Migration
+>
+> Replace your old `raw.githubusercontent.com` download URLs with the permanent **GitHub Releases** URLs:
+>
+> ```bash
+> # Old (deprecated after December 5, 2026)
+> https://raw.githubusercontent.com/aozora-kenzu/Threats-Collections/main/dataset/firehol_level1.txt
+>
+> # New (recommended — always points to the latest daily build)
+> https://github.com/aozora-kenzu/IP-Threats-Collections/releases/latest/download/firehol_level1.txt
+> ```
+>
+> 👉 **[Go to the New Repository: `aozora-kenzu/IP-Threats-Collections`](https://github.com/aozora-kenzu/IP-Threats-Collections)**
+
+---
+
 <div align="center">
 
-# 🛡️ Threats Collections
+# 🛡️ Threats Collections _(Legacy)_
 
 ### Automated Cyber Threat Intelligence (CTI) Feeds, Verified Bot Validation & Cloud/Datacenter Detection
 
+[![Status: Moved](https://img.shields.io/badge/Status-Moved%20to%20IP--Threats--Collections-dc2626?style=for-the-badge&logo=github&logoColor=white)](https://github.com/aozora-kenzu/IP-Threats-Collections)
+[![Sunset Date](https://img.shields.io/badge/Sunset%20Date-December%205%2C%202026-f59e0b?style=for-the-badge)](https://github.com/aozora-kenzu/IP-Threats-Collections)
 [![Daily Feed Sync](https://img.shields.io/github/actions/workflow/status/aozora-kenzu/Threats-Collections/update-feeds.yml?branch=main&style=for-the-badge&logo=githubactions&logoColor=white&label=Daily%20Sync)](https://github.com/aozora-kenzu/Threats-Collections/actions/workflows/update-feeds.yml)
 [![Last Updated](https://img.shields.io/github/last-commit/aozora-kenzu/Threats-Collections?style=for-the-badge&logo=git&logoColor=white&label=Last%20Updated&color=0284c7)](https://github.com/aozora-kenzu/Threats-Collections/commits/main)
 [![License: MIT](https://img.shields.io/github/license/aozora-kenzu/Threats-Collections?style=for-the-badge&logo=opensourceinitiative&logoColor=white&color=16a34a)](LICENSE)
-[![PHP >= 8.0](https://img.shields.io/badge/PHP-%3E%3D%208.0-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://www.php.net/)
-[![Repository Size](https://img.shields.io/github/repo-size/aozora-kenzu/Threats-Collections?style=for-the-badge&color=6366f1&label=Repo%20Size)](https://github.com/aozora-kenzu/Threats-Collections)
 
+[![PHP >= 8.0](https://img.shields.io/badge/PHP-%3E%3D%208.0-777BB4?style=flat-square&logo=php&logoColor=white)](https://www.php.net/)
 [![GitHub Stars](https://img.shields.io/github/stars/aozora-kenzu/Threats-Collections?style=flat-square&logo=github&color=eab308)](https://github.com/aozora-kenzu/Threats-Collections/stargazers)
 [![GitHub Forks](https://img.shields.io/github/forks/aozora-kenzu/Threats-Collections?style=flat-square&logo=github&color=3b82f6)](https://github.com/aozora-kenzu/Threats-Collections/network/members)
-[![GitHub Issues](https://img.shields.io/github/issues/aozora-kenzu/Threats-Collections?style=flat-square&logo=github&color=ef4444)](https://github.com/aozora-kenzu/Threats-Collections/issues)
 [![Sync Schedule](https://img.shields.io/badge/Schedule-Daily%2002%3A00%20UTC-0891b2?style=flat-square)](.github/workflows/update-feeds.yml)
-[![Datasets](https://img.shields.io/badge/Feeds-11%20Datasets-7c3aed?style=flat-square)](#dataset-catalog)
+[![Feeds](https://img.shields.io/badge/Feeds-11%20Datasets-7c3aed?style=flat-square)](#dataset-catalog)
 [![Indicators](https://img.shields.io/badge/Indicators-3.4M%2B%20IOCs-ea580c?style=flat-square)](#dataset-catalog)
-[![Zero Dependencies](https://img.shields.io/badge/Dependencies-Zero%20External-059669?style=flat-square)](#getting-started)
 
 <p>
+  <a href="https://github.com/aozora-kenzu/IP-Threats-Collections"><strong>New Repository</strong></a> •
   <a href="#overview">Overview</a> •
   <a href="#architecture">Architecture</a> •
   <a href="#dataset-catalog">Datasets</a> •
@@ -42,7 +68,7 @@
 Whether you are hardening a reverse proxy, tuning a WAF, building an anti-fraud scoring engine, or protecting against credential stuffing and scraper abuse, this repository provides **daily-updated, machine-readable datasets** covering:
 
 - **Malicious Infrastructure:** FireHOL Level 1 (malware/C2), FireHOL Level 2 (active 48h attackers), Spamhaus DROP (hijacked netblocks), and IPsum reputation scores.
-- **Anonymizers & Proxies:** Commercial VPN CIDRs, Tor exit nodes, and ~2.94M aggregated open proxy endpoints.
+- **Anonymizers & Proxies:** Commercial VPN CIDRs, Tor exit nodes, and ~2.94M94M aggregated open proxy endpoints.
 - **Cloud & Datacenter Ranges (Anti-Bypass):** Direct integration with official AWS, Cloudflare, DigitalOcean, and Oracle Cloud (OCI) endpoints alongside community hosting lists.
 - **Verified Bots (False-Positive Prevention):** Official IPv4 CIDR ranges for Googlebot, Bingbot, OpenAI GPTBot, OpenAI SearchBot, and Applebot to safely allowlist legitimate crawlers.
 - **Global & Threat ASN Intelligence:** Malicious/datacenter ASN watchlists plus a 123K+ entry worldwide ASN-to-organization/country directory.
@@ -67,11 +93,11 @@ The builder ([`gets.php`](gets.php) + [`helpers.php`](helpers.php)) executes a r
 
 ```mermaid
 flowchart LR
-    A["Upstream CTI & Official APIs\n(JSON · CSV · Netset · TXT)"] -->|"Phase 1: Streaming cURL\n+ Fallback URLs"| B["temp/\nIsolated Raw Staging"]
-    B -->|"Phase 2: FeedNormalizer\nValidate IPv4 / CIDR / ASN"| C["FeedMerger\nHash-Indexed Deduplication"]
-    C -->|"Clean Sorted Output"| D["dataset/*.txt\n11 Flat-File Feeds"]
+    A["Upstream CTI & Official APIs\n\n(JSON · CSV · Netset · TXT)"] -->|"Phase 1: Streaming cURL\n\n+ Fallback URLs"| B["temp/\nIsolated\nIsolated Raw Staging"]
+    B -->|"Phase 2: FeedNormalizer\nValidate\nValidate IPv4 / CIDR / ASN"| C["FeedMerger\nHash\nHash-Indexed Deduplication"]
+    C -->|"Clean Sorted Output"| D["dataset/*.txt\n11\n11 Flat-File Feeds"]
     C -.->|"Auto Cleanup"| B
-    D -->|"GitHub Actions\nDaily 02:00 UTC"| E["Automated Commit & Push\nReady for Raw Consumption"]
+    D -->|"GitHub Actions\nDaily\nDaily 02:00 UTC"| E["Automated Commit & Push\nReady\nReady for Raw Consumption"]
 ```
 
 ### Core Pipeline Modules
@@ -88,7 +114,7 @@ flowchart LR
 
 ## Dataset Catalog
 
-All compiled feeds are stored as clean, deduplicated UTF-8 flat files in [`dataset/`](dataset/) and refreshed automatically every day at **02:00 UTC (09:00 WIB)**.
+All compiled feeds are stored as clean, deduplicated UTF-8 flat files in [`dataset/`](dataset/) and refreshed automatically every day at **02:00 UTC (09:00 WIB)** until **December 5, 2026**.
 
 | Dataset File                                                 |                                                                                   Raw Pull                                                                                   | Category                    | Format                      | Approx. Entries | Upstream Sources                                                                                                                                                                                                                                                                                                                                          |
 | :----------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-------------------------- | :-------------------------- | :-------------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -103,6 +129,23 @@ All compiled feeds are stored as clean, deduplicated UTF-8 flat files in [`datas
 | [`dataset/tor_exit_nodes.txt`](dataset/tor_exit_nodes.txt)   |  [![Raw](https://img.shields.io/badge/Raw-TXT-blue?style=flat-square)](https://raw.githubusercontent.com/aozora-kenzu/Threats-Collections/main/dataset/tor_exit_nodes.txt)   | Tor Anonymity Exit Nodes    | `IP`                        |      ~1.3K      | [SecOps Institute](https://github.com/SecOps-Institute/Tor-IP-Addresses), [The Tor Project](https://check.torproject.org/)                                                                                                                                                                                                                                |
 | [`dataset/datacenter_asns.txt`](dataset/datacenter_asns.txt) | [![Raw](https://img.shields.io/badge/Raw-TSV-10b981?style=flat-square)](https://raw.githubusercontent.com/aozora-kenzu/Threats-Collections/main/dataset/datacenter_asns.txt) | Hosting, VPN & Bad ASNs     | `TSV (ASN, Name)`           |       ~1K       | [X4BNet](https://github.com/X4BNet/lists_vpn), [Enesutku](https://github.com/enesutku/ASN-List), [Brian Hama](https://github.com/brianhama/bad-asn-list)                                                                                                                                                                                                  |
 | [`dataset/asn_names.txt`](dataset/asn_names.txt)             |    [![Raw](https://img.shields.io/badge/Raw-TSV-10b981?style=flat-square)](https://raw.githubusercontent.com/aozora-kenzu/Threats-Collections/main/dataset/asn_names.txt)    | Global ASN Directory        | `TSV (ASN, Name, Country)`  |      ~123K      | [RIPE NCC](https://ftp.ripe.net/ripe/asnames/asn.txt), [BGP.tools](https://bgp.tools/asns.csv)                                                                                                                                                                                                                                                            |
+
+> [!IMPORTANT]
+> For long-term integrations, use the **GitHub Releases** links in [`aozora-kenzu/IP-Threats-Collections`](https://github.com/aozora-kenzu/IP-Threats-Collections/releases/latest).
+
+| Dataset File                                                 |                                                                               Raw Pull _(Legacy)_                                                                               |                                                                                   New Release Pull                                                                                   | Category                    | Format                      | Approx. Entries | Upstream Sources                                                                                                                                                                                                                                                                                                                                          |
+| :----------------------------------------------------------- | :-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-------------------------- | :-------------------------- | :-------------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`dataset/vpn.txt`](dataset/vpn.txt)                         |       [![Raw](https://img.shields.io/badge/Raw-Legacy-64748b?style=flat-square)](https://raw.githubusercontent.com/aozora-kenzu/Threats-Collections/main/dataset/vpn.txt)       |       [![Release](https://img.shields.io/badge/New-Release-16a34a?style=flat-square)](https://github.com/aozora-kenzu/IP-Threats-Collections/releases/latest/download/vpn.txt)       | Commercial VPNs             | `CIDR`                      |      ~96K       | [X4BNet](https://github.com/X4BNet/lists_vpn), [Joseph Rocca](https://github.com/josephrocca/is-vpn)                                                                                                                                                                                                                                                      |
+| [`dataset/datacenter.txt`](dataset/datacenter.txt)           |   [![Raw](https://img.shields.io/badge/Raw-Legacy-64748b?style=flat-square)](https://raw.githubusercontent.com/aozora-kenzu/Threats-Collections/main/dataset/datacenter.txt)    |   [![Release](https://img.shields.io/badge/New-Release-16a34a?style=flat-square)](https://github.com/aozora-kenzu/IP-Threats-Collections/releases/latest/download/datacenter.txt)    | Cloud & Datacenters         | `CIDR`                      |      ~106K      | [AWS](https://ip-ranges.amazonaws.com/ip-ranges.json), [Cloudflare](https://www.cloudflare.com/ips-v4), [DigitalOcean](https://digitalocean.com/geo/google.csv), [Oracle OCI](https://docs.oracle.com/en-us/iaas/tools/public_ip_ranges.json), [X4BNet](https://github.com/X4BNet/lists_vpn), [Jhassine](https://github.com/jhassine/server-ip-addresses) |
+| [`dataset/verified_bots.txt`](dataset/verified_bots.txt)     |  [![Raw](https://img.shields.io/badge/Raw-Legacy-64748b?style=flat-square)](https://raw.githubusercontent.com/aozora-kenzu/Threats-Collections/main/dataset/verified_bots.txt)  |  [![Release](https://img.shields.io/badge/New-Release-16a34a?style=flat-square)](https://github.com/aozora-kenzu/IP-Threats-Collections/releases/latest/download/verified_bots.txt)  | Verified Crawlers & AI Bots | `TSV (CIDR, Bot, Category)` |      ~270       | [Googlebot](https://developers.google.com/static/search/apis/ipranges/googlebot.json), [Bingbot](https://www.bing.com/toolbox/bingbot.json), [OpenAI](https://platform.openai.com/docs/bots), [Applebot](https://search.developer.apple.com/applebot.json)                                                                                                |
+| [`dataset/firehol_proxies.txt`](dataset/firehol_proxies.txt) | [![Raw](https://img.shields.io/badge/Raw-Legacy-64748b?style=flat-square)](https://raw.githubusercontent.com/aozora-kenzu/Threats-Collections/main/dataset/firehol_proxies.txt) | [![Release](https://img.shields.io/badge/New-Release-16a34a?style=flat-square)](https://github.com/aozora-kenzu/IP-Threats-Collections/releases/latest/download/firehol_proxies.txt) | Open HTTP/SOCKS Proxies     | `CIDR`                      |     ~2.94M      | [FireHOL Proxies](https://github.com/firehol/blocklist-ipsets)                                                                                                                                                                                                                                                                                            |
+| [`dataset/ipsum.txt`](dataset/ipsum.txt)                     |      [![Raw](https://img.shields.io/badge/Raw-Legacy-64748b?style=flat-square)](https://raw.githubusercontent.com/aozora-kenzu/Threats-Collections/main/dataset/ipsum.txt)      |      [![Release](https://img.shields.io/badge/New-Release-16a34a?style=flat-square)](https://github.com/aozora-kenzu/IP-Threats-Collections/releases/latest/download/ipsum.txt)      | Scored Abusive IPs          | `TSV (IP, Hits)`            |      ~145K      | [Stamparm IPsum](https://github.com/stamparm/ipsum)                                                                                                                                                                                                                                                                                                       |
+| [`dataset/firehol_level2.txt`](dataset/firehol_level2.txt)   | [![Raw](https://img.shields.io/badge/Raw-Legacy-64748b?style=flat-square)](https://raw.githubusercontent.com/aozora-kenzu/Threats-Collections/main/dataset/firehol_level2.txt)  | [![Release](https://img.shields.io/badge/New-Release-16a34a?style=flat-square)](https://github.com/aozora-kenzu/IP-Threats-Collections/releases/latest/download/firehol_level2.txt)  | Active Attackers (48h)      | `CIDR`                      |     ~15.7K      | [FireHOL Level 2](https://github.com/firehol/blocklist-ipsets)                                                                                                                                                                                                                                                                                            |
+| [`dataset/firehol_level1.txt`](dataset/firehol_level1.txt)   | [![Raw](https://img.shields.io/badge/Raw-Legacy-64748b?style=flat-square)](https://raw.githubusercontent.com/aozora-kenzu/Threats-Collections/main/dataset/firehol_level1.txt)  | [![Release](https://img.shields.io/badge/New-Release-16a34a?style=flat-square)](https://github.com/aozora-kenzu/IP-Threats-Collections/releases/latest/download/firehol_level1.txt)  | Cybercrime, Malware & C2    | `CIDR`                      |      ~4.6K      | [FireHOL Level 1](https://github.com/firehol/blocklist-ipsets)                                                                                                                                                                                                                                                                                            |
+| [`dataset/spamhaus_drop.txt`](dataset/spamhaus_drop.txt)     |  [![Raw](https://img.shields.io/badge/Raw-Legacy-64748b?style=flat-square)](https://raw.githubusercontent.com/aozora-kenzu/Threats-Collections/main/dataset/spamhaus_drop.txt)  |  [![Release](https://img.shields.io/badge/New-Release-16a34a?style=flat-square)](https://github.com/aozora-kenzu/IP-Threats-Collections/releases/latest/download/spamhaus_drop.txt)  | Hijacked Networks (DROP)    | `CIDR`                      |      ~1.7K      | [Spamhaus DROP](https://www.spamhaus.org/drop/)                                                                                                                                                                                                                                                                                                           |
+| [`dataset/tor_exit_nodes.txt`](dataset/tor_exit_nodes.txt)   | [![Raw](https://img.shields.io/badge/Raw-Legacy-64748b?style=flat-square)](https://raw.githubusercontent.com/aozora-kenzu/Threats-Collections/main/dataset/tor_exit_nodes.txt)  | [![Release](https://img.shields.io/badge/New-Release-16a34a?style=flat-square)](https://github.com/aozora-kenzu/IP-Threats-Collections/releases/latest/download/tor_exit_nodes.txt)  | Tor Anonymity Exit Nodes    | `IP`                        |      ~1.3K      | [SecOps Institute](https://github.com/SecOps-Institute/Tor-IP-Addresses), [The Tor Project](https://check.torproject.org/)                                                                                                                                                                                                                                |
+| [`dataset/datacenter_asns.txt`](dataset/datacenter_asns.txt) | [![Raw](https://img.shields.io/badge/Raw-Legacy-64748b?style=flat-square)](https://raw.githubusercontent.com/aozora-kenzu/Threats-Collections/main/dataset/datacenter_asns.txt) | [![Release](https://img.shields.io/badge/New-Release-16a34a?style=flat-square)](https://github.com/aozora-kenzu/IP-Threats-Collections/releases/latest/download/datacenter_asns.txt) | Hosting, VPN & Bad ASNs     | `TSV (ASN, Name)`           |       ~1K       | [X4BNet](https://github.com/X4BNet/lists_vpn), [Enesutku](https://github.com/enesutku/ASN-List), [Brian Hama](https://github.com/brianhama/bad-asn-list)                                                                                                                                                                                                  |
+| [`dataset/asn_names.txt`](dataset/asn_names.txt)             |    [![Raw](https://img.shields.io/badge/Raw-Legacy-64748b?style=flat-square)](https://raw.githubusercontent.com/aozora-kenzu/Threats-Collections/main/dataset/asn_names.txt)    |    [![Release](https://img.shields.io/badge/New-Release-16a34a?style=flat-square)](https://github.com/aozora-kenzu/IP-Threats-Collections/releases/latest/download/asn_names.txt)    | Global ASN Directory        | `TSV (ASN, Name, Country)`  |      ~123K      | [RIPE NCC](https://ftp.ripe.net/ripe/asnames/asn.txt), [BGP.tools](https://bgp.tools/asns.csv)                                                                                                                                                                                                                                                            |
 
 > [!NOTE]
 > Entry counts are approximate snapshots and fluctuate dynamically as upstream threat feeds and official provider IP ranges update daily.
@@ -160,15 +203,14 @@ All compiled feeds are stored as clean, deduplicated UTF-8 flat files in [`datas
 
 ## Direct Consumption
 
-You do **not** need PHP or a local clone to use these datasets. Pull any pre-built dataset directly into your firewall, SIEM, or application via GitHub Raw URLs:
+> [!WARNING]
+> Please switch to the new **GitHub Releases** endpoints below before **December 5, 2026**:
 
 ```bash
-# Download severe malware/C2 & Spamhaus DROP lists directly
-curl -fsSL https://raw.githubusercontent.com/aozora-kenzu/Threats-Collections/main/dataset/firehol_level1.txt -o firehol_level1.txt
-curl -fsSL https://raw.githubusercontent.com/aozora-kenzu/Threats-Collections/main/dataset/spamhaus_drop.txt -o spamhaus_drop.txt
-
-# Download verified search engine & AI crawler allowlist
-curl -fsSL https://raw.githubusercontent.com/aozora-kenzu/Threats-Collections/main/dataset/verified_bots.txt -o verified_bots.txt
+# Recommended: Pull from the new IP-Threats-Collections repository (GitHub Releases)
+curl -fsSL https://github.com/aozora-kenzu/IP-Threats-Collections/releases/latest/download/firehol_level1.txt -o firehol_level1.txt
+curl -fsSL https://github.com/aozora-kenzu/IP-Threats-Collections/releases/latest/download/spamhaus_drop.txt -o spamhaus_drop.txt
+curl -fsSL https://github.com/aozora-kenzu/IP-Threats-Collections/releases/latest/download/verified_bots.txt -o verified_bots.txt
 ```
 
 ---
@@ -179,7 +221,7 @@ curl -fsSL https://raw.githubusercontent.com/aozora-kenzu/Threats-Collections/ma
 Threats-Collections/
 ├── .github/
 │   └── workflows/
-│       └── update-feeds.yml     # Serverless daily GitHub Actions sync workflow
+│       └── update-feeds.yml     # Daily GitHub Actions sync workflow (active until Dec 5, 2026)
 ├── dataset/                     # Clean, normalized, deduplicated flat-file datasets
 │   ├── asn_names.txt            # Global ASN directory (RIPE NCC + BGP.tools)
 │   ├── datacenter.txt           # Official Cloud + Datacenter CIDRs
@@ -209,11 +251,11 @@ Threats-Collections/
 - **Extensions:** `ext-curl`, `ext-mbstring`
 - **Memory Limit:** `512M` minimum (`1024M` recommended when processing the full ~51MB `firehol_proxies.txt` dataset)
 
-### 1. Clone the Repository
+### 1. Clone the New Repository
 
 ```bash
-git clone https://github.com/aozora-kenzu/Threats-Collections.git
-cd Threats-Collections
+git clone https://github.com/aozora-kenzu/IP-Threats-Collections.git
+cd IP-Threats-Collections
 ```
 
 ### 2. Run via Terminal (CLI)
@@ -239,6 +281,20 @@ php gets.php --feed=proxies    # FireHOL aggregated proxies only (~51MB)
 
 | Target Argument    | Accepted Aliases     | Output File(s)                                                    |
 | :----------------- | :------------------- | :---------------------------------------------------------------- |
+| `--feed=vpn`       | —                    | `dataset/vpn.txt`                                                 |
+| `--feed=dc`        | `dch`, `cloud`       | `dataset/datacenter.txt`                                          |
+| `--feed=bots`      | `bot`, `crawler`     | `dataset/verified_bots.txt`                                       |
+| `--feed=tor`       | —                    | `dataset/tor_exit_nodes.txt`                                      |
+| `--feed=ipsum`     | —                    | `dataset/ipsum.txt`                                               |
+| `--feed=firehol`   | —                    | `firehol_level1.txt`, `firehol_level2.txt`, `firehol_proxies.txt` |
+| `--feed=firehol1`  | —                    | `dataset/firehol_level1.txt`                                      |
+| `--feed=firehol2`  | —                    | `dataset/firehol_level2.txt`                                      |
+| `--feed=proxies`   | —                    | `dataset/firehol_proxies.txt`                                     |
+| `--feed=spamhaus`  | `drop`               | `dataset/spamhaus_drop.txt`                                       |
+| `--feed=asn`       | `custom_asn`         | `dataset/datacenter_asns.txt`                                     |
+| `--feed=asn_names` | `directory`, `names` | `dataset/asn_names.txt`                                           |
+| Target Argument    | Accepted Aliases     | Output File(s)                                                    |
+| :---               | :---                 | :---                                                              |
 | `--feed=vpn`       | —                    | `dataset/vpn.txt`                                                 |
 | `--feed=dc`        | `dch`, `cloud`       | `dataset/datacenter.txt`                                          |
 | `--feed=bots`      | `bot`, `crawler`     | `dataset/verified_bots.txt`                                       |
@@ -277,17 +333,7 @@ Trigger builds directly from your browser with real-time streamed plain-text log
 
 ### 1. GitHub Actions (Serverless — Recommended)
 
-This repository includes a pre-configured workflow in [`.github/workflows/update-feeds.yml`](.github/workflows/update-feeds.yml):
-
-- Runs **serverlessly** on `ubuntu-latest` with PHP `8.2` (`memory_limit=1024M`).
-- Scheduled automatically **every day at 02:00 UTC (09:00 WIB)**.
-- Supports on-demand execution anytime via the **Actions** tab (`workflow_dispatch`).
-- Automatically commits and pushes updated `.txt` files inside `dataset/` only when upstream changes are detected.
-
-> [!IMPORTANT]
-> If you fork this repository, enable workflow write access so GitHub Actions can push dataset updates:
->
-> **Settings → Actions → General → Workflow permissions → Select "Read and write permissions" → Save**
+This legacy repository's workflow in [`.github/workflows/update-feeds.yml`](.github/workflows/update-feeds.yml) will continue running daily at **02:00 UTC (09:00 WIB)** until **December 5, 2026**, after which automated updates will move exclusively to [`aozora-kenzu/IP-Threats-Collections`](https://github.com/aozora-kenzu/IP-Threats-Collections).
 
 ### 2. Linux Cron Job (Self-Hosted Server)
 
@@ -295,10 +341,10 @@ For self-hosted VPS or dedicated infrastructure, configure `crontab -e`:
 
 ```cron
 # Full daily synchronization at 02:00 AM
-0 2 * * * /usr/bin/php -d memory_limit=1024M /path/to/Threats-Collections/gets.php >> /var/log/threat-feeds.log 2>&1
+0 2 * * * /usr/bin/php -d memory_limit=1024M /path/to/IP-Threats-Collections/gets.php >> /var/log/threat-feeds.log 2>&1
 
 # High-frequency Tor Exit Node refresh every 2 hours
-0 */2 * * * /usr/bin/php /path/to/Threats-Collections/gets.php --feed=tor >> /var/log/tor-sync.log 2>&1
+0 */2 * * * /usr/bin/php /path/to/IP-Threats-Collections/gets.php --feed=tor >> /var/log/tor-sync.log 2>&1
 ```
 
 ---
@@ -386,8 +432,8 @@ All rights to underlying threat intelligence and official IP ranges belong to th
 
 <div align="center">
 
-If you find these threat intelligence feeds useful, consider giving the repository a ⭐!
+🚀 **Please migrate to [`aozora-kenzu/IP-Threats-Collections`](https://github.com/aozora-kenzu/IP-Threats-Collections) before December 5, 2026!**
 
-**[⬆ Back to Top](#top)**
+**[⬆ Back to Top](#toptop)**
 
 </div>
