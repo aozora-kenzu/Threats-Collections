@@ -1,254 +1,393 @@
-# 🛡️ Threats Collections - Threat Intelligence Feeds
+<a id="top"></a>
 
-An automated collection and pipeline engine for Cyber Threat Intelligence (CTI), verified bot validation, and datacenter/cloud detection. This repository aggregates, normalizes, and deduplicates IP reputation feeds, CIDR blocks, Open Proxies, VPN subnets, Tor exit nodes, global ASN directories, and official IP ranges from major search engines and cloud providers directly into clean, ready-to-use flat text files in the `dataset/` directory.
+<div align="center">
+
+# 🛡️ Threats Collections
+
+### Automated Cyber Threat Intelligence (CTI) Feeds, Verified Bot Validation & Cloud/Datacenter Detection
+
+[![Daily Feed Sync](https://img.shields.io/github/actions/workflow/status/aozora-kenzu/Threats-Collections/update-feeds.yml?branch=main&style=for-the-badge&logo=githubactions&logoColor=white&label=Daily%20Sync)](https://github.com/aozora-kenzu/Threats-Collections/actions/workflows/update-feeds.yml)
+[![Last Updated](https://img.shields.io/github/last-commit/aozora-kenzu/Threats-Collections?style=for-the-badge&logo=git&logoColor=white&label=Last%20Updated&color=0284c7)](https://github.com/aozora-kenzu/Threats-Collections/commits/main)
+[![License: MIT](https://img.shields.io/github/license/aozora-kenzu/Threats-Collections?style=for-the-badge&logo=opensourceinitiative&logoColor=white&color=16a34a)](LICENSE)
+[![PHP >= 8.0](https://img.shields.io/badge/PHP-%3E%3D%208.0-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://www.php.net/)
+[![Repository Size](https://img.shields.io/github/repo-size/aozora-kenzu/Threats-Collections?style=for-the-badge&color=6366f1&label=Repo%20Size)](https://github.com/aozora-kenzu/Threats-Collections)
+
+[![GitHub Stars](https://img.shields.io/github/stars/aozora-kenzu/Threats-Collections?style=flat-square&logo=github&color=eab308)](https://github.com/aozora-kenzu/Threats-Collections/stargazers)
+[![GitHub Forks](https://img.shields.io/github/forks/aozora-kenzu/Threats-Collections?style=flat-square&logo=github&color=3b82f6)](https://github.com/aozora-kenzu/Threats-Collections/network/members)
+[![GitHub Issues](https://img.shields.io/github/issues/aozora-kenzu/Threats-Collections?style=flat-square&logo=github&color=ef4444)](https://github.com/aozora-kenzu/Threats-Collections/issues)
+[![Sync Schedule](https://img.shields.io/badge/Schedule-Daily%2002%3A00%20UTC-0891b2?style=flat-square)](.github/workflows/update-feeds.yml)
+[![Datasets](https://img.shields.io/badge/Feeds-11%20Datasets-7c3aed?style=flat-square)](#dataset-catalog)
+[![Indicators](https://img.shields.io/badge/Indicators-3.4M%2B%20IOCs-ea580c?style=flat-square)](#dataset-catalog)
+[![Zero Dependencies](https://img.shields.io/badge/Dependencies-Zero%20External-059669?style=flat-square)](#getting-started)
+
+<p>
+  <a href="#overview">Overview</a> •
+  <a href="#architecture">Architecture</a> •
+  <a href="#dataset-catalog">Datasets</a> •
+  <a href="#direct-consumption">Direct Pull</a> •
+  <a href="#getting-started">Self-Hosting</a> •
+  <a href="#automation">Automation</a> •
+  <a href="#production-integrations">Integrations</a> •
+  <a href="#license--attribution">License</a>
+</p>
+
+</div>
 
 ---
 
-## 🌟 Key Features
+## Overview
 
-- **Automated 2-Phase Pipeline (`gets.php`):**
-  1. **Phase 1 (Download):** Fetches raw threat intelligence from authoritative sources using streaming cURL with automatic URL fallback mechanisms and custom browser-grade User-Agents into an isolated `temp/` directory.
-  2. **Phase 2 (Merge & Deduplicate):** Parses multi-format inputs (JSON, CSV, Netset, Plain Text), strips comments, validates IPv4/CIDR/ASN boundaries, and eliminates duplicates using high-speed in-memory hash indexing. Writes clean, normalized `.txt` files to `dataset/` and cleans up `temp/`.
-- **Search Engine Crawler & AI Scraper Validation (Verified Bots):**
-  - Includes official IP ranges for Googlebot, Bingbot, OpenAI GPTBot, OpenAI SearchBot, and Applebot to allow white-listing and prevent false positives when crawlers operate from cloud provider IPs.
-- **Official Cloud Provider IP Ranges (Anti-Bypass Protection):**
-  - Direct integration with official JSON/CSV endpoints from Amazon Web Services (AWS), Cloudflare, DigitalOcean, and Oracle Cloud Infrastructure (OCI) to immediately detect newly spun-up VPS and private VPN exit nodes.
-- **Ready for Immediate Integration:**
-  - All files in `dataset/` are clean, sorted, flat text files (`.txt`), ready to be consumed directly by **Nginx**, **HAProxy**, **iptables / ipset**, **nftables**, **Fail2ban**, **CrowdSec**, **Suricata**, **Snort**, **MikroTik RouterOS**, or **Cloudflare WAF**.
-- **Automated Daily Sync via GitHub Actions:**
-  - Runs automatically in the cloud every day at 02:00 UTC (09:00 WIB) without requiring a local server or computer to be on.
-- **Targeted Synchronization:**
-  - Build all datasets at once or isolate specific categories (e.g., `--feed=bots`, `--feed=dc`, `--feed=vpn`, `--feed=asn_names`).
+**Threats Collections** is a zero-dependency, automated **Cyber Threat Intelligence (CTI)** aggregation and ETL pipeline built in pure PHP. It fetches, normalizes, validates, and deduplicates threat feeds from authoritative security communities and official cloud/search-engine APIs into clean, ready-to-consume flat text datasets in [`dataset/`](dataset/).
+
+Whether you are hardening a reverse proxy, tuning a WAF, building an anti-fraud scoring engine, or protecting against credential stuffing and scraper abuse, this repository provides **daily-updated, machine-readable datasets** covering:
+
+- **Malicious Infrastructure:** FireHOL Level 1 (malware/C2), FireHOL Level 2 (active 48h attackers), Spamhaus DROP (hijacked netblocks), and IPsum reputation scores.
+- **Anonymizers & Proxies:** Commercial VPN CIDRs, Tor exit nodes, and ~2.94M aggregated open proxy endpoints.
+- **Cloud & Datacenter Ranges (Anti-Bypass):** Direct integration with official AWS, Cloudflare, DigitalOcean, and Oracle Cloud (OCI) endpoints alongside community hosting lists.
+- **Verified Bots (False-Positive Prevention):** Official IPv4 CIDR ranges for Googlebot, Bingbot, OpenAI GPTBot, OpenAI SearchBot, and Applebot to safely allowlist legitimate crawlers.
+- **Global & Threat ASN Intelligence:** Malicious/datacenter ASN watchlists plus a 123K+ entry worldwide ASN-to-organization/country directory.
+
+### Compatible Security Stack
+
+![Nginx](https://img.shields.io/badge/Nginx-009639?style=flat-square&logo=nginx&logoColor=white)
+![HAProxy](https://img.shields.io/badge/HAProxy-106DA9?style=flat-square)
+![Cloudflare WAF](https://img.shields.io/badge/Cloudflare%20WAF-F38020?style=flat-square&logo=cloudflare&logoColor=white)
+![Linux iptables / ipset](https://img.shields.io/badge/Linux%20iptables%20%2F%20ipset-FCC624?style=flat-square&logo=linux&logoColor=black)
+![nftables](https://img.shields.io/badge/nftables-334155?style=flat-square)
+![Fail2ban](https://img.shields.io/badge/Fail2ban-DC2626?style=flat-square)
+![CrowdSec](https://img.shields.io/badge/CrowdSec-4F46E5?style=flat-square)
+![Suricata / Snort](https://img.shields.io/badge/Suricata%20%2F%20Snort-B91C1C?style=flat-square)
+![MikroTik RouterOS](https://img.shields.io/badge/MikroTik%20RouterOS-293239?style=flat-square&logo=mikrotik&logoColor=white)
 
 ---
 
-## 📁 Repository Structure
+## Architecture
+
+The builder ([`gets.php`](gets.php) + [`helpers.php`](helpers.php)) executes a resilient **2-phase ETL pipeline** designed for high throughput, low memory overhead, and fault tolerance:
+
+```mermaid
+flowchart LR
+    A["Upstream CTI & Official APIs\n(JSON · CSV · Netset · TXT)"] -->|"Phase 1: Streaming cURL\n+ Fallback URLs"| B["temp/\nIsolated Raw Staging"]
+    B -->|"Phase 2: FeedNormalizer\nValidate IPv4 / CIDR / ASN"| C["FeedMerger\nHash-Indexed Deduplication"]
+    C -->|"Clean Sorted Output"| D["dataset/*.txt\n11 Flat-File Feeds"]
+    C -.->|"Auto Cleanup"| B
+    D -->|"GitHub Actions\nDaily 02:00 UTC"| E["Automated Commit & Push\nReady for Raw Consumption"]
+```
+
+### Core Pipeline Modules
+
+| Component                  | File                         | Responsibility                                                                                                                           |
+| :------------------------- | :--------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------- |
+| **`ThreatDatasetBuilder`** | [`gets.php`](gets.php)       | Orchestrates Phase 1 downloads, Phase 2 merges, feed filtering (`--feed=`), and build summaries (CLI & Web).                             |
+| **`FeedDownloader`**       | [`helpers.php`](helpers.php) | Memory-efficient streaming cURL downloader with automatic fallback URLs and custom User-Agent handling.                                  |
+| **`FeedNormalizer`**       | [`helpers.php`](helpers.php) | Parses multi-format feeds (JSON, CSV, Netset, TXT), strips comments, validates IPv4/CIDR/ASN boundaries, and handles 32-bit subnet math. |
+| **`FeedMerger`**           | [`helpers.php`](helpers.php) | Merges multi-source feeds, deduplicates entries via in-memory hash indexing, and writes normalized `.txt` artifacts.                     |
+| **`FileUtils`**            | [`helpers.php`](helpers.php) | Manages isolated staging (`temp/`) and output (`dataset/`) directories with automatic post-build cleanup.                                |
+
+---
+
+## Dataset Catalog
+
+All compiled feeds are stored as clean, deduplicated UTF-8 flat files in [`dataset/`](dataset/) and refreshed automatically every day at **02:00 UTC (09:00 WIB)**.
+
+| Dataset File                                                 |                                                                                   Raw Pull                                                                                   | Category                    | Format                      | Approx. Entries | Upstream Sources                                                                                                                                                                                                                                                                                                                                          |
+| :----------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-------------------------- | :-------------------------- | :-------------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`dataset/vpn.txt`](dataset/vpn.txt)                         |        [![Raw](https://img.shields.io/badge/Raw-TXT-blue?style=flat-square)](https://raw.githubusercontent.com/aozora-kenzu/Threats-Collections/main/dataset/vpn.txt)        | Commercial VPNs             | `CIDR`                      |      ~96K       | [X4BNet](https://github.com/X4BNet/lists_vpn), [Joseph Rocca](https://github.com/josephrocca/is-vpn)                                                                                                                                                                                                                                                      |
+| [`dataset/datacenter.txt`](dataset/datacenter.txt)           |    [![Raw](https://img.shields.io/badge/Raw-TXT-blue?style=flat-square)](https://raw.githubusercontent.com/aozora-kenzu/Threats-Collections/main/dataset/datacenter.txt)     | Cloud & Datacenters         | `CIDR`                      |      ~106K      | [AWS](https://ip-ranges.amazonaws.com/ip-ranges.json), [Cloudflare](https://www.cloudflare.com/ips-v4), [DigitalOcean](https://digitalocean.com/geo/google.csv), [Oracle OCI](https://docs.oracle.com/en-us/iaas/tools/public_ip_ranges.json), [X4BNet](https://github.com/X4BNet/lists_vpn), [Jhassine](https://github.com/jhassine/server-ip-addresses) |
+| [`dataset/verified_bots.txt`](dataset/verified_bots.txt)     |  [![Raw](https://img.shields.io/badge/Raw-TSV-10b981?style=flat-square)](https://raw.githubusercontent.com/aozora-kenzu/Threats-Collections/main/dataset/verified_bots.txt)  | Verified Crawlers & AI Bots | `TSV (CIDR, Bot, Category)` |      ~270       | [Googlebot](https://developers.google.com/static/search/apis/ipranges/googlebot.json), [Bingbot](https://www.bing.com/toolbox/bingbot.json), [OpenAI](https://platform.openai.com/docs/bots), [Applebot](https://search.developer.apple.com/applebot.json)                                                                                                |
+| [`dataset/firehol_proxies.txt`](dataset/firehol_proxies.txt) |  [![Raw](https://img.shields.io/badge/Raw-TXT-blue?style=flat-square)](https://raw.githubusercontent.com/aozora-kenzu/Threats-Collections/main/dataset/firehol_proxies.txt)  | Open HTTP/SOCKS Proxies     | `CIDR`                      |     ~2.94M      | [FireHOL Proxies](https://github.com/firehol/blocklist-ipsets)                                                                                                                                                                                                                                                                                            |
+| [`dataset/ipsum.txt`](dataset/ipsum.txt)                     |      [![Raw](https://img.shields.io/badge/Raw-TSV-10b981?style=flat-square)](https://raw.githubusercontent.com/aozora-kenzu/Threats-Collections/main/dataset/ipsum.txt)      | Scored Abusive IPs          | `TSV (IP, Hits)`            |      ~145K      | [Stamparm IPsum](https://github.com/stamparm/ipsum)                                                                                                                                                                                                                                                                                                       |
+| [`dataset/firehol_level2.txt`](dataset/firehol_level2.txt)   |  [![Raw](https://img.shields.io/badge/Raw-TXT-blue?style=flat-square)](https://raw.githubusercontent.com/aozora-kenzu/Threats-Collections/main/dataset/firehol_level2.txt)   | Active Attackers (48h)      | `CIDR`                      |     ~15.7K      | [FireHOL Level 2](https://github.com/firehol/blocklist-ipsets)                                                                                                                                                                                                                                                                                            |
+| [`dataset/firehol_level1.txt`](dataset/firehol_level1.txt)   |  [![Raw](https://img.shields.io/badge/Raw-TXT-blue?style=flat-square)](https://raw.githubusercontent.com/aozora-kenzu/Threats-Collections/main/dataset/firehol_level1.txt)   | Cybercrime, Malware & C2    | `CIDR`                      |      ~4.6K      | [FireHOL Level 1](https://github.com/firehol/blocklist-ipsets)                                                                                                                                                                                                                                                                                            |
+| [`dataset/spamhaus_drop.txt`](dataset/spamhaus_drop.txt)     |   [![Raw](https://img.shields.io/badge/Raw-TXT-blue?style=flat-square)](https://raw.githubusercontent.com/aozora-kenzu/Threats-Collections/main/dataset/spamhaus_drop.txt)   | Hijacked Networks (DROP)    | `CIDR`                      |      ~1.7K      | [Spamhaus DROP](https://www.spamhaus.org/drop/)                                                                                                                                                                                                                                                                                                           |
+| [`dataset/tor_exit_nodes.txt`](dataset/tor_exit_nodes.txt)   |  [![Raw](https://img.shields.io/badge/Raw-TXT-blue?style=flat-square)](https://raw.githubusercontent.com/aozora-kenzu/Threats-Collections/main/dataset/tor_exit_nodes.txt)   | Tor Anonymity Exit Nodes    | `IP`                        |      ~1.3K      | [SecOps Institute](https://github.com/SecOps-Institute/Tor-IP-Addresses), [The Tor Project](https://check.torproject.org/)                                                                                                                                                                                                                                |
+| [`dataset/datacenter_asns.txt`](dataset/datacenter_asns.txt) | [![Raw](https://img.shields.io/badge/Raw-TSV-10b981?style=flat-square)](https://raw.githubusercontent.com/aozora-kenzu/Threats-Collections/main/dataset/datacenter_asns.txt) | Hosting, VPN & Bad ASNs     | `TSV (ASN, Name)`           |       ~1K       | [X4BNet](https://github.com/X4BNet/lists_vpn), [Enesutku](https://github.com/enesutku/ASN-List), [Brian Hama](https://github.com/brianhama/bad-asn-list)                                                                                                                                                                                                  |
+| [`dataset/asn_names.txt`](dataset/asn_names.txt)             |    [![Raw](https://img.shields.io/badge/Raw-TSV-10b981?style=flat-square)](https://raw.githubusercontent.com/aozora-kenzu/Threats-Collections/main/dataset/asn_names.txt)    | Global ASN Directory        | `TSV (ASN, Name, Country)`  |      ~123K      | [RIPE NCC](https://ftp.ripe.net/ripe/asnames/asn.txt), [BGP.tools](https://bgp.tools/asns.csv)                                                                                                                                                                                                                                                            |
+
+> [!NOTE]
+> Entry counts are approximate snapshots and fluctuate dynamically as upstream threat feeds and official provider IP ranges update daily.
+
+<details>
+<summary><strong>Preview Dataset Formats (Sample Lines)</strong></summary>
+
+#### Standard CIDR List (`vpn.txt`, `datacenter.txt`, `firehol_*.txt`, `spamhaus_drop.txt`)
+
+```text
+1.10.16.0/20
+1.19.0.0/16
+1.32.128.0/18
+```
+
+#### Standard IP List (`tor_exit_nodes.txt`)
+
+```text
+2.29.201.23
+2.56.119.122
+5.2.67.226
+```
+
+#### Verified Bots (`verified_bots.txt` — Tab-Separated: `CIDR`, `Bot`, `Category`)
+
+```tsv
+192.178.4.0/27	Googlebot	SEARCH_ENGINE
+192.178.4.128/27	Googlebot	SEARCH_ENGINE
+```
+
+#### Scored Threat Feed (`ipsum.txt` — Tab-Separated: `IP`, `Blacklist Hits`)
+
+```tsv
+64.62.197.137	9
+66.132.172.209	9
+```
+
+#### Threat ASNs (`datacenter_asns.txt` — Tab-Separated: `ASN`, `Organization`)
+
+```tsv
+1442	SureHosting Internet Solutions, Inc.
+3223	VOXILITY, RO
+```
+
+#### Global ASN Directory (`asn_names.txt` — Tab-Separated: `ASN`, `Organization`, `ISO Country`)
+
+```tsv
+1	LVLT-1 - Level 3 Parent, LLC, US	US
+2	UDEL-DCN - University of Delaware, US	US
+```
+
+</details>
+
+---
+
+## Direct Consumption
+
+You do **not** need PHP or a local clone to use these datasets. Pull any pre-built dataset directly into your firewall, SIEM, or application via GitHub Raw URLs:
+
+```bash
+# Download severe malware/C2 & Spamhaus DROP lists directly
+curl -fsSL https://raw.githubusercontent.com/aozora-kenzu/Threats-Collections/main/dataset/firehol_level1.txt -o firehol_level1.txt
+curl -fsSL https://raw.githubusercontent.com/aozora-kenzu/Threats-Collections/main/dataset/spamhaus_drop.txt -o spamhaus_drop.txt
+
+# Download verified search engine & AI crawler allowlist
+curl -fsSL https://raw.githubusercontent.com/aozora-kenzu/Threats-Collections/main/dataset/verified_bots.txt -o verified_bots.txt
+```
+
+---
+
+## Repository Structure
 
 ```text
 Threats-Collections/
-│
 ├── .github/
 │   └── workflows/
-│       └── update-feeds.yml     # Automated daily GitHub Actions cron workflow
-│
+│       └── update-feeds.yml     # Serverless daily GitHub Actions sync workflow
 ├── dataset/                     # Clean, normalized, deduplicated flat-file datasets
-│   ├── vpn.txt                  # Commercial VPN CIDRs (X4BNet + Rocca)
-│   ├── datacenter.txt           # Datacenter & Cloud CIDRs (AWS + Cloudflare + DO + OCI + X4BNet + Jhassine)
-│   ├── verified_bots.txt        # Official Search Engine & AI Crawler CIDRs (Googlebot, Bingbot, OpenAI, Applebot)
-│   ├── firehol_proxies.txt      # Aggregated Open Proxies CIDRs (FireHOL level 1/2/3/4 + xall)
-│   ├── ipsum.txt                # Malicious IPs with cumulative threat scores (IPsum)
-│   ├── firehol_level2.txt       # Active Attackers CIDRs past 48h (FireHOL Level 2)
-│   ├── firehol_level1.txt       # Severe Cybercrime & C2 CIDRs (FireHOL Level 1)
-│   ├── spamhaus_drop.txt        # Hijacked networks CIDRs (Spamhaus DROP & EDROP)
-│   ├── tor_exit_nodes.txt       # Active Tor Exit Node IPs (SecOps + TorProject)
-│   ├── datacenter_asns.txt      # Datacenter, Bad ASN & VPN Autonomous System Numbers
-│   └── asn_names.txt            # Global ASN Directory (RIPE NCC + BGP.tools: ASN, Name, Country Code)
-│
-├── gets.php                     # Pipeline orchestrator and dataset builder (CLI & Web)
-├── helpers.php                  # Core helper classes (FileUtils, FeedDownloader, FeedNormalizer, FeedMerger)
-├── LICENSE                      # MIT License and Data Disclaimer
-├── .gitignore                   # Excludes temporary downloads and local cache
+│   ├── asn_names.txt            # Global ASN directory (RIPE NCC + BGP.tools)
+│   ├── datacenter.txt           # Official Cloud + Datacenter CIDRs
+│   ├── datacenter_asns.txt      # Datacenter, VPN & Bad ASNs
+│   ├── firehol_level1.txt       # Severe cybercrime, malware & C2 CIDRs
+│   ├── firehol_level2.txt       # Active 48h attackers CIDRs
+│   ├── firehol_proxies.txt      # Aggregated open proxies CIDRs (~2.94M)
+│   ├── ipsum.txt                # Scored malicious IPv4 addresses
+│   ├── spamhaus_drop.txt        # Hijacked network CIDRs (Spamhaus DROP)
+│   ├── tor_exit_nodes.txt       # Active Tor exit node IPs
+│   ├── verified_bots.txt        # Official Search Engine & AI crawler CIDRs
+│   └── vpn.txt                  # Commercial VPN CIDRs
+├── gets.php                     # 2-phase ETL pipeline orchestrator (CLI & Web)
+├── helpers.php                  # FileUtils, FeedDownloader, FeedNormalizer, FeedMerger
+├── LICENSE                      # MIT License & upstream data disclaimer
+├── .gitignore                   # Excludes temp/ staging and local cache files
 └── README.md                    # Project documentation
 ```
 
 ---
 
-## 📊 Dataset Specifications & Upstream Sources
+## Getting Started
 
-| Dataset File                      | Upstream Source                                                                                                                                                                                                                                                                                                                                             | Format                      | Description / Purpose                                                                                                                       |
-| :-------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :-------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------ |
-| **`dataset/vpn.txt`**             | [X4BNet](https://github.com/X4BNet/lists_vpn) & [Joseph Rocca](https://github.com/josephrocca/is-vpn)                                                                                                                                                                                                                                                       | `CIDR List`                 | Commercial VPN subnets (NordVPN, ExpressVPN, Surfshark, Private Internet Access, etc.)                                                      |
-| **`dataset/datacenter.txt`**      | [AWS](https://ip-ranges.amazonaws.com/ip-ranges.json), [Cloudflare](https://www.cloudflare.com/ips-v4), [DigitalOcean](https://digitalocean.com/geo/google.csv), [Oracle OCI](https://docs.oracle.com/en-us/iaas/tools/public_ip_ranges.json), [X4BNet](https://github.com/X4BNet/lists_vpn), & [Jhassine](https://github.com/jhassine/server-ip-addresses) | `CIDR List`                 | Official cloud provider IP ranges and VPS hosting subnets (AWS, GCP, Azure, DigitalOcean, Oracle Cloud, Cloudflare CDN, Hetzner, OVH, etc.) |
-| **`dataset/verified_bots.txt`**   | [Google Developers](https://developers.google.com/static/search/apis/ipranges/googlebot.json), [Bing Toolbox](https://www.bing.com/toolbox/bingbot.json), [OpenAI](https://openai.com/), & [Apple Developer](https://search.developer.apple.com/applebot.json)                                                                                              | `TSV (CIDR, Bot, Category)` | Official IPv4 CIDR blocks belonging to legitimate search engine spiders and AI scrapers (Googlebot, Bingbot, GPTBot, SearchBot, Applebot)   |
-| **`dataset/firehol_proxies.txt`** | [FireHOL Proxies](https://github.com/firehol/blocklist-ipsets)                                                                                                                                                                                                                                                                                              | `CIDR List`                 | Aggregation of open HTTP/HTTPS/SOCKS proxies and public web proxies (~2.9M CIDRs)                                                           |
-| **`dataset/ipsum.txt`**           | [Stamparm IPsum](https://github.com/stamparm/ipsum)                                                                                                                                                                                                                                                                                                         | `TSV (IP, Hits)`            | Actively abusive IPv4 addresses with cumulative blacklist reputation score (1 to 8+)                                                        |
-| **`dataset/firehol_level2.txt`**  | [FireHOL Level 2](https://github.com/firehol/blocklist-ipsets)                                                                                                                                                                                                                                                                                              | `CIDR List`                 | Active attackers tracked over the past 48 hours (DDoS, brute-force scanners, exploit attempts)                                              |
-| **`dataset/firehol_level1.txt`**  | [FireHOL Level 1](https://github.com/firehol/blocklist-ipsets)                                                                                                                                                                                                                                                                                              | `CIDR List`                 | Severe cybercrime, botnet Command & Control (C2), malware hosts, and ransomware operators                                                   |
-| **`dataset/spamhaus_drop.txt`**   | [Spamhaus DROP/EDROP](https://www.spamhaus.org/drop/)                                                                                                                                                                                                                                                                                                       | `CIDR List`                 | Hijacked or maliciously controlled network subnets leased directly to cyber criminals                                                       |
-| **`dataset/tor_exit_nodes.txt`**  | [SecOps](https://github.com/SecOps-Institute/Tor-IP-Addresses) & [TorProject](https://check.torproject.org/)                                                                                                                                                                                                                                                | `IP List`                   | Active exit nodes operating on the Tor anonymity network                                                                                    |
-| **`dataset/datacenter_asns.txt`** | [X4BNet](https://github.com/X4BNet/lists_vpn), [Enesutku](https://github.com/enesutku/ASN-List), & [Brian Hama](https://github.com/brianhama/bad-asn-list)                                                                                                                                                                                                  | `TSV (ASN, Name)`           | Autonomous System Numbers associated with datacenter hosting, VPN providers, and malicious networks                                         |
-| **`dataset/asn_names.txt`**       | [RIPE NCC](https://ftp.ripe.net/ripe/asnames/asn.txt) & [BGP.tools](https://bgp.tools/asns.csv)                                                                                                                                                                                                                                                             | `TSV (ASN, Name, Country)`  | Comprehensive worldwide ASN directory containing organization names and ISO country codes (~123,000+ entries)                               |
+### Prerequisites
 
----
+- **PHP** `8.0+` (`8.2` / `8.3` / `8.4` recommended)
+- **Extensions:** `ext-curl`, `ext-mbstring`
+- **Memory Limit:** `512M` minimum (`1024M` recommended when processing the full ~51MB `firehol_proxies.txt` dataset)
 
-## 🚀 Usage Guide
+### 1. Clone the Repository
 
-### 1. System Requirements
+```bash
+git clone https://github.com/aozora-kenzu/Threats-Collections.git
+cd Threats-Collections
+```
 
-- **PHP** 8.0 or higher (PHP 8.1 / 8.2 / 8.3 / 8.4 recommended).
-- Required PHP extensions: `curl`, `mbstring`.
-- Recommended PHP memory limit (`memory_limit`): `512M` (or `1024M` when processing the complete 49MB FireHOL proxies dataset).
+### 2. Run via Terminal (CLI)
 
----
-
-### 2. Running via Terminal (CLI)
-
-#### Build All Datasets
-
-Downloads all raw sources and merges/deduplicates them into the `dataset/` directory:
+Build **all 11 datasets** in one pass:
 
 ```bash
 php gets.php
 ```
 
-#### Build Specific Dataset Category
-
-Use the `--feed=<name>` argument to process only a targeted dataset:
+Or isolate a **specific feed category** using `--feed=<name>`:
 
 ```bash
-# Update Verified Bots only (Googlebot, Bingbot, GPTBot, SearchBot, Applebot)
-php gets.php --feed=bots
-
-# Update Datacenter & Cloud Providers only (AWS, Cloudflare, DO, OCI, X4BNet, Jhassine)
-php gets.php --feed=dc
-
-# Update Commercial VPN ranges only
-php gets.php --feed=vpn
-
-# Update Tor Exit Nodes only
-php gets.php --feed=tor
-
-# Update IPsum Threat scores only
-php gets.php --feed=ipsum
-
-# Update Threat ASN Rules (Datacenter, Bad ASN & VPN) only
-php gets.php --feed=asn
-
-# Update Global ASN Directory (RIPE NCC / BGP.tools) only
-php gets.php --feed=asn_names
-
-# Update FireHOL Level 1 (Malware) only
-php gets.php --feed=firehol1
-
-# Update FireHOL Level 2 (Attackers) only
-php gets.php --feed=firehol2
-
-# Update Spamhaus DROP only
-php gets.php --feed=spamhaus
-
-# Update FireHOL Aggregated Proxies only (~49MB, ~2.9M CIDRs)
-php gets.php --feed=proxies
+php gets.php --feed=bots       # Verified bots only (Googlebot, Bingbot, OpenAI, Applebot)
+php gets.php --feed=dc         # Cloud & datacenter ranges only
+php gets.php --feed=vpn        # Commercial VPN CIDRs only
+php gets.php --feed=tor        # Tor exit nodes only
+php gets.php --feed=proxies    # FireHOL aggregated proxies only (~51MB)
 ```
 
----
+<details>
+<summary><strong>Complete CLI <code>--feed</code> Filter Reference</strong></summary>
 
-### 3. Running via Web Browser
+| Target Argument    | Accepted Aliases     | Output File(s)                                                    |
+| :----------------- | :------------------- | :---------------------------------------------------------------- |
+| `--feed=vpn`       | —                    | `dataset/vpn.txt`                                                 |
+| `--feed=dc`        | `dch`, `cloud`       | `dataset/datacenter.txt`                                          |
+| `--feed=bots`      | `bot`, `crawler`     | `dataset/verified_bots.txt`                                       |
+| `--feed=tor`       | —                    | `dataset/tor_exit_nodes.txt`                                      |
+| `--feed=ipsum`     | —                    | `dataset/ipsum.txt`                                               |
+| `--feed=firehol`   | —                    | `firehol_level1.txt`, `firehol_level2.txt`, `firehol_proxies.txt` |
+| `--feed=firehol1`  | —                    | `dataset/firehol_level1.txt`                                      |
+| `--feed=firehol2`  | —                    | `dataset/firehol_level2.txt`                                      |
+| `--feed=proxies`   | —                    | `dataset/firehol_proxies.txt`                                     |
+| `--feed=spamhaus`  | `drop`               | `dataset/spamhaus_drop.txt`                                       |
+| `--feed=asn`       | `custom_asn`         | `dataset/datacenter_asns.txt`                                     |
+| `--feed=asn_names` | `directory`, `names` | `dataset/asn_names.txt`                                           |
 
-Access the script using a local web server (Laragon, Apache, Nginx) or PHP's built-in server:
+</details>
+
+### 3. Run via Web Browser
+
+Start PHP's built-in development server (or serve via Laragon, Apache, or Nginx):
 
 ```bash
-# Start PHP built-in server on port 8000
 php -S 127.0.0.1:8000
 ```
 
-Open your browser to:
+Trigger builds directly from your browser with real-time streamed plain-text logs:
 
-- **Build All Datasets:** `http://localhost:8000/gets.php`
-- **Build Verified Bots:** `http://localhost:8000/gets.php?feed=bots`
-- **Build Cloud & Datacenter:** `http://localhost:8000/gets.php?feed=dc`
+- **Build All Datasets:** `http://127.0.0.1:8000/gets.php`
+- **Build Verified Bots:** `http://127.0.0.1:8000/gets.php?feed=bots`
+- **Build Cloud & Datacenters:** `http://127.0.0.1:8000/gets.php?feed=dc`
 
-The browser interface streams real-time console logs with auto-scroll.
+> [!WARNING]
+> Do **not** expose `gets.php` publicly on a production web server without authentication or IP restrictions, as anyone could trigger resource-intensive outbound downloads.
 
 ---
 
-## ⚙️ Automation & Keeping Datasets Up-to-Date
+## Automation
 
-### 1. GitHub Actions (Automated Cloud Sync - Recommended)
+### 1. GitHub Actions (Serverless — Recommended)
 
-This repository includes a ready-to-use GitHub Actions workflow in [`.github/workflows/update-feeds.yml`](.github/workflows/update-feeds.yml).
+This repository includes a pre-configured workflow in [`.github/workflows/update-feeds.yml`](.github/workflows/update-feeds.yml):
 
-- **Runs completely serverless** inside GitHub's free runners (no local computer/server required).
-- Scheduled to run **daily at 02:00 UTC (09:00 WIB)**.
-- Can also be triggered manually anytime via the **Actions** tab on GitHub (`workflow_dispatch`).
-- If any upstream data changes, the workflow automatically commits and pushes the updated `.txt` files in `dataset/` back to your repository.
+- Runs **serverlessly** on `ubuntu-latest` with PHP `8.2` (`memory_limit=1024M`).
+- Scheduled automatically **every day at 02:00 UTC (09:00 WIB)**.
+- Supports on-demand execution anytime via the **Actions** tab (`workflow_dispatch`).
+- Automatically commits and pushes updated `.txt` files inside `dataset/` only when upstream changes are detected.
 
-To enable it, ensure your GitHub repository has write permissions enabled for GitHub Actions:
-
-> **Repository Settings** $\rightarrow$ **Actions** $\rightarrow$ **General** $\rightarrow$ **Workflow permissions** $\rightarrow$ Select **"Read and write permissions"** $\rightarrow$ Click **Save**.
+> [!IMPORTANT]
+> If you fork this repository, enable workflow write access so GitHub Actions can push dataset updates:
+>
+> **Settings → Actions → General → Workflow permissions → Select "Read and write permissions" → Save**
 
 ### 2. Linux Cron Job (Self-Hosted Server)
 
-If you run the builder on your own Linux server or VPS:
-
-Run full daily synchronization at 02:00 AM:
+For self-hosted VPS or dedicated infrastructure, configure `crontab -e`:
 
 ```cron
-0 2 * * * /usr/bin/php /path/to/Threats-Collections/gets.php >> /var/log/threat-feeds.log 2>&1
-```
+# Full daily synchronization at 02:00 AM
+0 2 * * * /usr/bin/php -d memory_limit=1024M /path/to/Threats-Collections/gets.php >> /var/log/threat-feeds.log 2>&1
 
-Update Tor Exit Nodes every 2 hours:
-
-```cron
+# High-frequency Tor Exit Node refresh every 2 hours
 0 */2 * * * /usr/bin/php /path/to/Threats-Collections/gets.php --feed=tor >> /var/log/tor-sync.log 2>&1
 ```
 
 ---
 
-## 🛡️ Production Usage Examples
+## Production Integrations
 
-### 1. Nginx IP Blocking
+### 1. Nginx IP Blocking (`geo` Module)
 
-Include CIDR files directly inside your Nginx configuration:
+Convert the flat CIDR feeds into Nginx `geo` format (`<cidr> 1;`) and enforce blocking at the edge:
+
+```bash
+# Generate Nginx-compatible geo map from FireHOL Level 1 & Spamhaus DROP
+awk '{print $1 " 1;"}' dataset/firehol_level1.txt dataset/spamhaus_drop.txt \
+  > /etc/nginx/conf.d/threat_blocklist.geo
+```
 
 ```nginx
-# Map client IP to blocked status
-geo $is_blocked {
-    default         0;
-    include         /path/to/Threats-Collections/dataset/firehol_level1.txt;
-    include         /path/to/Threats-Collections/dataset/spamhaus_drop.txt;
+# /etc/nginx/nginx.conf (inside http {} block)
+geo $is_threat {
+    default 0;
+    include /etc/nginx/conf.d/threat_blocklist.geo;
 }
 
 server {
     listen 80;
     server_name example.com;
 
-    if ($is_blocked) {
+    if ($is_threat) {
         return 403 "Access Denied by Threat Intelligence Policy";
     }
 }
 ```
 
-### 2. Linux iptables / ipset
+### 2. Linux Kernel Filtering (`ipset` + `iptables`)
 
-Block severe threats with zero CPU overhead using `ipset`:
+Block severe threat networks at wire speed with minimal CPU overhead using atomic `ipset` swaps:
 
 ```bash
-# Create ipset hash set for networks
-ipset create threat_blocklist hash:net
+#!/usr/bin/env bash
+set -euo pipefail
 
-# Populate from FireHOL Level 1
-while read cidr; do
-    ipset add threat_blocklist "$cidr" -exist
-done < /path/to/Threats-Collections/dataset/firehol_level1.txt
+# Build a temporary ipset atomically (zero downtime during reload)
+ipset create threat_blocklist_tmp hash:net maxelem 262144 -exist
+ipset flush threat_blocklist_tmp
 
-# Drop incoming packets in iptables
-iptables -I INPUT -m set --match-set threat_blocklist src -j DROP
+awk '{print "add threat_blocklist_tmp " $1 " -exist"}' \
+  dataset/firehol_level1.txt dataset/spamhaus_drop.txt | ipset restore
+
+# Swap into production set
+ipset create threat_blocklist hash:net maxelem 262144 -exist
+ipset swap threat_blocklist_tmp threat_blocklist
+ipset destroy threat_blocklist_tmp
+
+# Enforce drop rule in iptables (add once)
+iptables -C INPUT -m set --match-set threat_blocklist src -j DROP 2>/dev/null || \
+  iptables -I INPUT -m set --match-set threat_blocklist src -j DROP
 ```
+
+> [!TIP]
+> Always evaluate [`dataset/verified_bots.txt`](dataset/verified_bots.txt) as an **allowlist before** blocking [`dataset/datacenter.txt`](dataset/datacenter.txt) or [`dataset/vpn.txt`](dataset/vpn.txt) to avoid accidentally blocking legitimate Google, Bing, Apple, or OpenAI crawlers hosted on cloud ranges.
 
 ---
 
-## 📜 License & Attribution
+## License & Attribution
 
-This project and its pipeline code are licensed under the [MIT License](LICENSE).
+### License
 
-This project is created strictly for cybersecurity research, fraud prevention, and malicious traffic mitigation. All raw intelligence feeds originate from open-source security communities and official provider APIs:
+The pipeline source code ([`gets.php`](gets.php), [`helpers.php`](helpers.php), and workflow configurations) is open-source and licensed under the **[MIT License](LICENSE)**.
 
-- [Google Search Central Official IP Ranges](https://developers.google.com/search/docs/crawling-indexing/googlebot-ip-ranges)
-- [Microsoft Bingbot IP Ranges](https://www.bing.com/toolbox/bingbot.json)
-- [OpenAI Crawlers (GPTBot & SearchBot)](https://platform.openai.com/docs/bots)
-- [Applebot Official IP Ranges](https://support.apple.com/en-us/HT204683)
-- [Amazon Web Services (AWS) IP Ranges](https://docs.aws.amazon.com/general/latest/gr/aws-ip-ranges.html)
-- [Cloudflare Official IPv4/IPv6 CIDRs](https://www.cloudflare.com/ips/)
-- [DigitalOcean Geolocation IP Ranges](https://www.digitalocean.com/)
-- [Oracle Cloud Infrastructure (OCI) IP Ranges](https://docs.oracle.com/en-us/iaas/tools/public_ip_ranges.json)
-- [RIPE NCC Official ASN Names](https://ftp.ripe.net/ripe/asnames/)
-- [BGP.tools Research Platform](https://bgp.tools/)
-- [FireHOL IP Lists](https://iplists.firehol.org/)
-- [The Spamhaus Project](https://www.spamhaus.org/)
-- [The Tor Project](https://check.torproject.org/)
-- [IPsum by Stamparm](https://github.com/stamparm/ipsum)
-- [X4BNet Threat Feeds](https://github.com/X4BNet)
-- [Joseph Rocca](https://github.com/josephrocca/is-vpn)
-- [Jhassine Datacenter IPs](https://github.com/jhassine/server-ip-addresses)
-- [Enesutku ASN-List](https://github.com/enesutku/ASN-List)
-- [Brian Hama Bad ASN List](https://github.com/brianhama/bad-asn-list)
+### Disclaimer
+
+> [!CAUTION]
+> These datasets are compiled strictly for **cybersecurity research, abuse mitigation, and fraud prevention**. Threat intelligence feeds are dynamic and may occasionally produce false positives. Always test blocking rules in monitor/log-only mode before enforcing hard blocks in production. Neither the maintainers nor upstream providers assume liability for downtime or blocking decisions.
+
+### Upstream Data Providers
+
+All rights to underlying threat intelligence and official IP ranges belong to their respective maintainers:
+
+- **Official Crawlers & AI Bots:** [Google Search Central](https://developers.google.com/search/docs/crawling-indexing/googlebot-ip-ranges) · [Microsoft Bingbot](https://www.bing.com/toolbox/bingbot.json) · [OpenAI Crawlers](https://platform.openai.com/docs/bots) · [Applebot](https://support.apple.com/en-us/HT204683)
+- **Cloud & Hosting Providers:** [Amazon Web Services (AWS)](https://docs.aws.amazon.com/general/latest/gr/aws-ip-ranges.html) · [Cloudflare](https://www.cloudflare.com/ips/) · [DigitalOcean](https://www.digitalocean.com/) · [Oracle Cloud (OCI)](https://docs.oracle.com/en-us/iaas/tools/public_ip_ranges.json) · [Jhassine Server IPs](https://github.com/jhassine/server-ip-addresses)
+- **Threat Intelligence & Anonymizers:** [FireHOL IP Lists](https://iplists.firehol.org/) · [The Spamhaus Project](https://www.spamhaus.org/) · [The Tor Project](https://check.torproject.org/) · [SecOps Institute](https://github.com/SecOps-Institute/Tor-IP-Addresses) · [IPsum by Stamparm](https://github.com/stamparm/ipsum) · [X4BNet](https://github.com/X4BNet) · [Joseph Rocca](https://github.com/josephrocca/is-vpn)
+- **ASN Intelligence & Directories:** [RIPE NCC](https://ftp.ripe.net/ripe/asnames/) · [BGP.tools](https://bgp.tools/) · [Enesutku ASN-List](https://github.com/enesutku/ASN-List) · [Brian Hama Bad ASN List](https://github.com/brianhama/bad-asn-list)
+
+---
+
+<div align="center">
+
+If you find these threat intelligence feeds useful, consider giving the repository a ⭐!
+
+**[⬆ Back to Top](#top)**
+
+</div>
